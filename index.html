@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Michael Scott Developer Picker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:wght@700&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            background-image: radial-gradient(#d4d4d4 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .dunder-blue {
+            background-color: #1d4ed8;
+        }
+        .dundie-gold {
+            background: linear-gradient(45deg, #FFD700, #FDB931, #FFD700);
+        }
+        .paper-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .stamp-font {
+            font-family: 'Courier Prime', monospace;
+        }
+        .handwritten {
+            font-family: 'Permanent Marker', cursive;
+        }
+        .office-header {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shaking {
+            animation: shake 0.5s;
+            animation-iteration-count: infinite;
+        }
+        
+        /* Reveal Animation */
+        .reveal-box {
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .reveal-box.winner {
+            transform: scale(1.1);
+            border-color: #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Background Watermark -->
+    <div class="absolute opacity-5 pointer-events-none select-none text-[20vw] font-black text-gray-400 rotate-12 z-0">
+        PAPER
+    </div>
+
+    <div class="max-w-2xl w-full relative z-10">
+        
+        <!-- Header Card -->
+        <div class="bg-white p-8 rounded-sm shadow-xl border-t-8 border-blue-700 mb-6 text-center relative">
+            <!-- Sticker -->
+            <div class="absolute -top-4 -right-4 bg-yellow-300 text-red-600 px-4 py-2 transform rotate-12 shadow-md handwritten text-lg border-2 border-red-600 rounded-sm">
+                Urgent A.F.
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2 office-header uppercase tracking-widest">
+                Beakwise
+            </h1>
+            <p class="text-sm text-gray-500 uppercase tracking-[0.3em] mb-6">Infinity Developer Selection Tool 2.0</p>
+            
+            <div class="bg-gray-100 p-4 border-2 border-dashed border-gray-300 rounded mb-4">
+                <p class="text-gray-600 italic font-serif">
+                    "I am not superstitious, but I am a little stitious about who answers my questions."
+                </p>
+                <p class="text-right text-xs font-bold mt-2 text-gray-500">- Michael Scott (probably)</p>
+            </div>
+        </div>
+
+        <!-- The Machine -->
+        <div class="bg-white rounded-sm shadow-2xl overflow-hidden border border-gray-200">
+            
+            <!-- Screen Area -->
+            <div class="bg-black p-8 min-h-[200px] flex flex-col items-center justify-center text-center relative border-b-4 border-gray-700">
+                <div id="screen-glare" class="absolute inset-0 bg-gradient-to-tr from-transparent via-white to-transparent opacity-5 pointer-events-none"></div>
+                
+                <h2 id="result-display" class="text-4xl md:text-6xl font-bold text-green-400 stamp-font tracking-wider">
+                    WAITING...
+                </h2>
+                <p id="status-text" class="text-green-700 mt-4 text-sm stamp-font animate-pulse">
+                    System Ready. Insert Cheese Balls to Continue.
+                </p>
+            </div>
+
+            <!-- Controls -->
+            <div class="p-8 bg-gray-100 flex flex-col gap-6">
+                
+                <!-- Big Button -->
+                <button id="select-btn" class="group relative w-full transform transition-all active:scale-95 focus:outline-none">
+                    <div class="absolute inset-0 bg-blue-800 rounded-lg transform translate-y-2 translate-x-0 transition-transform group-hover:translate-y-3"></div>
+                    <div class="relative bg-blue-600 text-white font-bold text-2xl py-6 px-8 rounded-lg border-2 border-blue-400 shadow-inner flex items-center justify-center gap-3 group-hover:-translate-y-1 transition-transform">
+                        <span class="material-icons">I DECLARE... A DEVELOPER!</span>
+                    </div>
+                </button>
+
+                <!-- Footer -->
+                <div class="flex justify-between items-end border-t border-gray-300 pt-4 mt-2">
+                    <div class="text-xs text-gray-400">
+                        Department: <span class="font-bold text-gray-600">Quabity Assuance</span><br>
+                        Manager: <span class="font-bold text-gray-600">Creed Bratton</span>
+                    </div>
+                    <div class="w-16">
+                         <!-- Simple CSS Shapes for a Dundee look-alike icon -->
+                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-500 w-full h-auto drop-shadow-md"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Post-it note -->
+        <div class="absolute -bottom-12 -left-4 md:-left-12 bg-yellow-200 p-4 shadow-lg transform -rotate-6 w-48 handwritten text-gray-800 text-sm border border-yellow-300 z-20 hidden md:block">
+            Dwight, do not touch this button. It is for authorized personnel only. <br>- Michael
+        </div>
+
+    </div>
+
+    <script>
+        const developers = [
+            "Berke Atalay", 
+            "Safa Sogutlugil", 
+            "Edip Ceylan", 
+            "Erol Ceylan", 
+            "Edil Ceylan"
+        ];
+
+        const michaelQuotes = [
+            "Calculating... That's what she said.",
+            "Searching for the World's Best Boss...",
+            "Running diagnostic on beet farms...",
+            "Consulting the Party Planning Committee...",
+            "Parkour!",
+            "Loading... I love inside jokes.",
+            "Analyzing pretzel day metrics...",
+            "Declaring Bankruptcy...",
+            "Where are the turtles!?",
+            "Identify theft is not a joke, Jim!",
+            "Did I stutter?"
+        ];
+
+        const btn = document.getElementById('select-btn');
+        const display = document.getElementById('result-display');
+        const status = document.getElementById('status-text');
+        const screenArea = display.parentElement;
+
+        let isSpinning = false;
+
+        // Confetti Code (Simplified)
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let confettiParticles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function createConfetti() {
+            const colors = ['#1d4ed8', '#FFD700', '#ef4444', '#ffffff']; // Blue, Gold, Red, White
+            for (let i = 0; i < 150; i++) {
+                confettiParticles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    w: Math.random() * 10 + 5,
+                    h: Math.random() * 5 + 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 5 + 2,
+                    angle: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 10
+                });
+            }
+        }
+
+        function updateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            confettiParticles.forEach((p, index) => {
+                p.y += p.speed;
+                p.angle += p.rotationSpeed;
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.angle * Math.PI / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                ctx.restore();
+
+                if (p.y > canvas.height) confettiParticles.splice(index, 1);
+            });
+
+            if (confettiParticles.length > 0) requestAnimationFrame(updateConfetti);
+        }
+
+        btn.addEventListener('click', () => {
+            if (isSpinning) return;
+            isSpinning = true;
+            
+            // Reset styles
+            display.classList.remove('text-yellow-400');
+            display.classList.add('text-green-400');
+            screenArea.classList.remove('shaking');
+            
+            // Start the chaos
+            let iterations = 0;
+            let speed = 50;
+            const totalIterations = 30;
+            
+            // Random Quote
+            status.innerText = michaelQuotes[Math.floor(Math.random() * michaelQuotes.length)];
+
+            const interval = setInterval(() => {
+                // Random name shuffle
+                const randomName = developers[Math.floor(Math.random() * developers.length)];
+                display.innerText = randomName.toUpperCase();
+                
+                // Visual noise
+                if(iterations > 20) {
+                    screenArea.classList.add('shaking');
+                    speed += 20; // Slow down at the end
+                }
+
+                iterations++;
+
+                if (iterations >= totalIterations) {
+                    clearInterval(interval);
+                    finalizeWinner();
+                }
+            }, speed);
+        });
+
+        function finalizeWinner() {
+            const winner = developers[Math.floor(Math.random() * developers.length)];
+            
+            // Dramatic pause...
+            display.innerText = "...";
+            status.innerText = "THE DUNDIE GOES TO...";
+            screenArea.classList.remove('shaking');
+
+            setTimeout(() => {
+                display.innerText = winner.toUpperCase();
+                display.classList.remove('text-green-400');
+                display.classList.add('text-yellow-400'); // Gold color
+                
+                // Specific funny messages based on who wins (Optional flavor)
+                if (winner.includes("Ceylan")) {
+                    status.innerText = "The Ceylan Dynasty Prevails!";
+                } else {
+                    status.innerText = "BOOM! ROASTED! (You're chosen)";
+                }
+
+                createConfetti();
+                updateConfetti();
+                isSpinning = false;
+            }, 800);
+        }
+    </script>
+</body>
+</html>
