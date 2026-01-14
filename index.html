@@ -1,24 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown to Salvation</title>
+    <title>Kurtuluşa Geri Sayım</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Special+Elite&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --blood-red: #8a0303;
-            --bright-red: #ff0000;
-            --dark-bg: #050000;
+            --gold: #FFD700;
+            --soft-white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
         }
 
         body {
-            background-color: var(--dark-bg);
-            color: var(--blood-red);
-            font-family: 'Creepster', cursive;
+            /* Nature Background Image */
+            background: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=2074&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--soft-white);
+            font-family: 'Poppins', sans-serif;
             overflow: hidden;
             height: 100vh;
             display: flex;
@@ -28,126 +32,135 @@
             position: relative;
         }
 
-        /* Film Grain & Vignette Overlay */
-        .overlay {
-            position: fixed;
+        /* Overlay to make text readable on image */
+        body::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background: rgba(0, 0, 0, 0.4); /* Darkens the image */
+            z-index: 0;
+        }
+
+        /* Particle Overlay */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
             pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            bottom: -20px;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.4; }
+            100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
+        }
+
+        /* Main Container - Glassmorphism */
+        .countdown-container {
+            text-align: center;
             z-index: 10;
-            background: 
-                radial-gradient(circle, transparent 60%, black 100%),
-                url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIj48ZmlsdGVyIGlkPSJnoiPjxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjY1IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI2cpIiBvcGFjaXR5PSIwLjA1Ii8+PC9zdmc+');
-        }
-
-        /* Glitch Animation */
-        @keyframes glitch {
-            0% { transform: translate(0); text-shadow: -2px 0 red, 2px 0 blue; }
-            2% { transform: translate(-2px, 2px); }
-            4% { transform: translate(2px, -2px); }
-            6% { transform: translate(0); text-shadow: none; }
-            100% { transform: translate(0); }
-        }
-
-        @keyframes flicker {
-            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; text-shadow: 0 0 10px var(--blood-red); }
-            20%, 24%, 55% { opacity: 0.4; text-shadow: none; }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); text-shadow: 0 0 10px var(--blood-red); }
-            50% { transform: scale(1.02); text-shadow: 0 0 25px var(--bright-red); }
-            100% { transform: scale(1); text-shadow: 0 0 10px var(--blood-red); }
-        }
-
-        .glitch-text {
-            animation: glitch 3s infinite alternate-reverse;
+            padding: 4rem;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: var(--glass-shadow);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            max-width: 95%;
+            width: 900px;
+            animation: popIn 1s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
         }
 
-        .flicker-text {
-            animation: flicker 4s infinite;
-        }
-
-        /* Countdown Container */
-        .countdown-container {
-            text-align: center;
-            z-index: 5;
-            padding: 2rem;
-            border: 1px solid rgba(138, 3, 3, 0.3);
-            background: rgba(0, 0, 0, 0.8);
-            box-shadow: 0 0 50px rgba(138, 3, 3, 0.2);
-            backdrop-filter: blur(5px);
-            max-width: 90%;
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .title {
-            font-family: 'Nosifer', cursive;
-            font-size: 3rem;
-            margin-bottom: 2rem;
-            color: var(--bright-red);
-            text-shadow: 0 0 10px var(--blood-red);
-            letter-spacing: 0.1em;
-            line-height: 1.2;
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            margin-bottom: 2.5rem;
+            color: var(--soft-white);
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            letter-spacing: 0.15em;
+            line-height: 1.1;
+            font-weight: 800;
         }
 
+        /* Timer Grid */
         .timer-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
-            margin-top: 2rem;
+            margin-top: 1rem;
         }
 
-        .time-unit {
+        /* Individual Time Cards */
+        .time-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 1.5rem 0.5rem;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background 0.3s;
+        }
+
+        .time-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.6);
         }
 
         .number {
-            font-family: 'Special Elite', cursive; /* Typewriter style for numbers */
-            font-size: 4rem;
-            font-weight: bold;
-            color: #d1d1d1;
-            text-shadow: 2px 2px 0px var(--blood-red);
-            animation: pulse 2s infinite ease-in-out;
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            line-height: 1;
+            margin-bottom: 0.5rem;
         }
 
         .label {
-            font-family: 'Creepster', cursive;
-            font-size: 1.2rem;
-            color: var(--blood-red);
-            margin-top: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.9);
             text-transform: uppercase;
             letter-spacing: 2px;
+            font-weight: 400;
         }
 
         .message {
             margin-top: 3rem;
-            font-size: 1.5rem;
-            color: #666;
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+            color: var(--soft-white);
             min-height: 2rem;
-        }
-
-        /* Blood drip decoration */
-        .drip {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 2px;
-            height: 100px;
-            background: var(--blood-red);
-            box-shadow: 0 0 5px var(--blood-red);
-            animation: drip 4s infinite ease-in;
-            opacity: 0.8;
-        }
-
-        @keyframes drip {
-            0% { height: 0; opacity: 1; top: 0; }
-            80% { height: 40vh; opacity: 0.8; }
-            100% { height: 45vh; opacity: 0; top: 20vh;}
+            font-weight: 400;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.9;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         /* Settings Modal */
@@ -158,103 +171,131 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
             z-index: 50;
             justify-content: center;
             align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .settings-content {
-            background: #111;
-            border: 2px solid var(--blood-red);
-            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 3rem;
             text-align: center;
-            box-shadow: 0 0 30px var(--blood-red);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            color: #333;
+            width: 90%;
+            max-width: 400px;
+            transform: scale(0.95);
+            animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes scaleUp {
+            to { transform: scale(1); }
         }
 
         input[type="datetime-local"] {
-            background: #000;
-            color: var(--bright-red);
-            border: 1px solid var(--blood-red);
-            padding: 10px;
-            font-family: 'Special Elite', cursive;
-            font-size: 1.2rem;
-            margin: 20px 0;
+            background: #f8f9fa;
+            color: #2d3748;
+            border: 2px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            margin: 25px 0;
             outline: none;
+            width: 100%;
+            transition: border-color 0.3s;
+        }
+
+        input[type="datetime-local"]:focus {
+            border-color: #fda085;
         }
 
         button.save-btn {
-            background: var(--blood-red);
-            color: #000;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
             border: none;
-            padding: 10px 30px;
-            font-family: 'Nosifer', cursive;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
         }
 
         button.save-btn:hover {
-            background: var(--bright-red);
-            box-shadow: 0 0 15px var(--bright-red);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 239, 125, 0.6);
         }
 
         .settings-trigger {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            color: #333;
+            bottom: 30px;
+            right: 30px;
+            color: white;
             cursor: pointer;
             z-index: 20;
-            opacity: 0.3;
-            transition: opacity 0.3s;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+            padding: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
         }
         .settings-trigger:hover {
-            opacity: 1;
-            color: var(--blood-red);
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg) scale(1.1);
         }
 
         /* Mobile Adjustments */
         @media (max-width: 768px) {
-            .title { font-size: 2rem; }
+            .countdown-container { padding: 2rem 1.5rem; width: 95%; }
+            .title { font-size: 1.8rem; margin-bottom: 2rem; }
             .timer-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-            .number { font-size: 3rem; }
+            .number { font-size: 2.5rem; }
+            .time-card { padding: 1rem 0.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Overlay Effects -->
-    <div class="overlay"></div>
-    <div class="drip" style="left: 10%; animation-duration: 5s;"></div>
-    <div class="drip" style="left: 30%; animation-duration: 7s; animation-delay: 2s;"></div>
-    <div class="drip" style="left: 70%; animation-duration: 6s; animation-delay: 1s;"></div>
-    <div class="drip" style="left: 90%; animation-duration: 4.5s; animation-delay: 3s;"></div>
+    <!-- Particle Overlay -->
+    <div class="particles" id="particles"></div>
 
     <div class="countdown-container">
-        <h1 class="title flicker-text">OUR SALVATION<br>AWAITS</h1>
+        <h1 class="title">YENİ BİR ŞAFAK</h1>
         
         <div class="timer-grid" id="timer">
-            <div class="time-unit">
+            <div class="time-card">
                 <span class="number" id="days">00</span>
-                <span class="label">Days</span>
+                <span class="label">Gün</span>
             </div>
-            <div class="time-unit">
+            <div class="time-card">
                 <span class="number" id="hours">00</span>
-                <span class="label">Hours</span>
+                <span class="label">Saat</span>
             </div>
-            <div class="time-unit">
+            <div class="time-card">
                 <span class="number" id="minutes">00</span>
-                <span class="label">Minutes</span>
+                <span class="label">Dakika</span>
             </div>
-            <div class="time-unit">
+            <div class="time-card">
                 <span class="number" id="seconds">00</span>
-                <span class="label">Seconds</span>
+                <span class="label">Saniye</span>
             </div>
         </div>
 
-        <div class="message glitch-text" id="status-message">
-            THE TIME IS NEAR
+        <div class="message" id="status-message">
+            UMUT YÜKSELİYOR
         </div>
     </div>
 
@@ -266,16 +307,44 @@
     <!-- Settings Modal -->
     <div id="settings-modal">
         <div class="settings-content">
-            <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--bright-red);">ORDAIN THE DATE</h2>
-            <p style="font-family: 'Special Elite'; font-size: 0.9rem; color: #888;">When shall salvation come?</p>
+            <h2 style="font-family: 'Cinzel', serif; font-size: 1.8rem; margin-bottom: 0.5rem; color: #11998e;">ZAMANI BELİRLE</h2>
+            <p style="font-family: 'Poppins', sans-serif; font-size: 0.95rem; color: #718096; margin-bottom: 1rem;">Kutlama ne zaman başlıyor?</p>
             <input type="datetime-local" id="target-date-input">
             <br>
-            <button class="save-btn" onclick="saveDate()">SEAL THE PACT</button>
-            <button class="save-btn" onclick="closeSettings()" style="background: transparent; border: 1px solid #444; color: #666; font-size: 0.8rem; margin-top: 10px;">CANCEL</button>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="save-btn" onclick="saveDate()">Tarihi Onayla</button>
+                <button class="save-btn" onclick="closeSettings()" style="background: transparent; color: #718096; box-shadow: none;">İptal</button>
+            </div>
         </div>
     </div>
 
     <script>
+        // --- Particle Generation ---
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 40;
+            
+            for(let i=0; i<particleCount; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                
+                // Randomize positions and properties
+                const size = Math.random() * 8 + 4;
+                p.style.left = Math.random() * 100 + '%';
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                
+                // Stagger animations
+                const duration = Math.random() * 15 + 10;
+                const delay = Math.random() * -20;
+                p.style.animationDuration = duration + 's';
+                p.style.animationDelay = delay + 's';
+                
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
         // --- Logic ---
         const DEFAULT_DATE = "2026-01-23T16:45:00"; 
         let targetDate;
@@ -292,23 +361,24 @@
 
         // Messages to cycle through
         const messages = [
-            "THE TIME IS NEAR",
-            "PREPARE YOURSELF",
-            "NO ESCAPE",
-            "THE END BEGINS",
-            "SALVATION COMES"
+            "UMUT YÜKSELİYOR",
+            "DAHA PARLAK BİR GELECEK",
+            "O AN ÇOK YAKIN",
+            "IŞIK KAZANACAK",
+            "NEŞE BİZİ BEKLİYOR"
         ];
         
         let msgIndex = 0;
         setInterval(() => {
             const msgEl = document.getElementById('status-message');
+            msgEl.style.transition = "opacity 0.8s ease";
             msgEl.style.opacity = 0; // Fade out
             setTimeout(() => {
                 msgIndex = (msgIndex + 1) % messages.length;
                 msgEl.innerText = messages[msgIndex];
-                msgEl.style.opacity = 1; // Fade in
-            }, 500);
-        }, 5000);
+                msgEl.style.opacity = 0.9; // Fade in
+            }, 800);
+        }, 6000);
 
 
         function updateCountdown() {
@@ -316,8 +386,12 @@
             const distance = targetDate - now;
 
             if (distance < 0) {
-                document.getElementById("timer").innerHTML = '<div style="grid-column: span 4; font-size: 3rem; color: var(--bright-red);">IT IS HERE</div>';
-                document.getElementById("status-message").innerText = "JUDGEMENT HAS ARRIVED";
+                document.getElementById("timer").innerHTML = `
+                    <div style="grid-column: span 4; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                        <div style="font-family: 'Cinzel', serif; font-size: 3rem; color: #fff; text-shadow: 0 0 25px rgba(255,255,255,0.8); margin-bottom: 1rem;">BAŞLADI</div>
+                        <div style="font-family: 'Poppins', sans-serif; font-size: 1.2rem; opacity: 0.8;">Yeni çağa hoş geldiniz</div>
+                    </div>`;
+                document.getElementById("status-message").style.display = "none";
                 return;
             }
 
@@ -335,9 +409,7 @@
         // --- Settings Modal Logic ---
         function openSettings() {
             document.getElementById('settings-modal').style.display = 'flex';
-            // Set input to current target
             const dateObj = new Date(targetDate);
-            // Format for datetime-local input: YYYY-MM-DDTHH:MM
             const isoString = new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
             document.getElementById('target-date-input').value = isoString;
         }
