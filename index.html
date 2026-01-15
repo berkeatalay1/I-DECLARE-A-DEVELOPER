@@ -7,18 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Cinzel (Başlık), Montserrat (Sayılar - Modern/Clean), Poppins (Metin) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@100;300;500&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold: #FFD700;
-            --soft-white: #ffffff;
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --soft-white: rgba(255, 255, 255, 0.95);
+            --glass-bg: rgba(255, 255, 255, 0.03); /* Çok daha şeffaf */
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
-            /* Fallback Background Image */
+            /* Fallback Background */
             background: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=2074&auto=format&fit=crop') no-repeat center center fixed;
             background-size: cover;
             color: var(--soft-white);
@@ -30,10 +30,10 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            transition: background-image 1s ease-in-out;
+            transition: background-image 1.5s ease-in-out;
         }
 
-        /* Overlay to make text readable on image */
+        /* Cinematic Vignette Overlay */
         body::before {
             content: '';
             position: absolute;
@@ -41,8 +41,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.4); /* Darkens the image */
+            background: radial-gradient(circle at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
             z-index: 0;
+            pointer-events: none;
         }
 
         /* Particle Overlay */
@@ -60,111 +61,185 @@
         .particle {
             position: absolute;
             bottom: -20px;
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 70%);
             border-radius: 50%;
             animation: floatUp linear infinite;
         }
 
         @keyframes floatUp {
             0% { transform: translateY(0) scale(0.5); opacity: 0; }
-            20% { opacity: 0.6; }
-            80% { opacity: 0.4; }
-            100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
+            50% { opacity: 0.4; }
+            100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
         }
 
-        /* Main Container - Glassmorphism */
-        .countdown-container {
-            text-align: center;
-            z-index: 10;
-            padding: 4rem;
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: var(--glass-shadow);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            max-width: 95%;
-            width: 900px;
-            animation: popIn 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* Main Content Layout */
+        .content-wrapper {
             position: relative;
-        }
-
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 20px;
         }
 
         .title {
             font-family: 'Cinzel', serif;
-            font-size: 3.5rem;
-            margin-bottom: 2.5rem;
-            color: var(--soft-white);
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            letter-spacing: 0.15em;
-            line-height: 1.1;
-            font-weight: 800;
+            font-size: 2.5rem; /* Biraz küçülttük, zarif olsun */
+            font-weight: 400;
+            margin-bottom: 3rem;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            text-align: center;
+            opacity: 0;
+            animation: fadeDown 1.5s ease-out forwards;
         }
 
-        /* Timer Grid */
-        .timer-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-top: 1rem;
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Individual Time Cards */
+        /* Ultra Modern Timer Grid */
+        .timer-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        /* Floating Glass Cards - The "Best UI" Part */
         .time-card {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 1.5rem 0.5rem;
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: transform 0.3s ease, background 0.3s;
+            width: 160px;
+            height: 220px;
+            
+            /* Ultra-Minimal Glass */
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            opacity: 0;
+            animation: fadeUp 1s ease-out forwards;
         }
 
+        /* Stagger animations */
+        .time-card:nth-child(1) { animation-delay: 0.2s; }
+        .time-card:nth-child(2) { animation-delay: 0.4s; }
+        .time-card:nth-child(3) { animation-delay: 0.6s; }
+        .time-card:nth-child(4) { animation-delay: 0.8s; }
+
         .time-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-15px) scale(1.05);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 30px rgba(255,255,255,0.1);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .number {
-            font-family: 'Cinzel', serif;
-            font-size: 3.5rem;
-            font-weight: 600;
-            color: #fff;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            font-family: 'Montserrat', sans-serif; /* Clean, modern geometry */
+            font-size: 5rem;
+            font-weight: 100; /* Ultra Thin - Luxury Look */
+            color: #ffffff;
             line-height: 1;
             margin-bottom: 0.5rem;
+            letter-spacing: -2px; /* Tight tracking for numbers */
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
         }
 
         .label {
             font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.9);
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.6);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 0.2em;
             font-weight: 400;
+        }
+
+        /* Message Area */
+        .message-container {
+            margin-top: 4rem;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .message {
-            margin-top: 3rem;
             font-family: 'Cinzel', serif;
-            font-size: 1.25rem;
-            color: var(--soft-white);
-            min-height: 2rem;
-            font-weight: 400;
-            letter-spacing: 3px;
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.8);
+            letter-spacing: 0.4em;
             text-transform: uppercase;
-            opacity: 0.9;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            animation: fadeInOut 5s infinite;
         }
 
-        /* Settings Modal */
+        /* Modern Bottom Dock (Controls) */
+        .bottom-dock {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            display: flex;
+            gap: 15px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .bottom-dock:hover {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .dock-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dock-btn:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.1);
+        }
+
+        .dock-separator {
+            width: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 0 5px;
+        }
+
+        /* Settings Modal - Redesigned */
         #settings-modal {
             display: none;
             position: fixed;
@@ -172,129 +247,114 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            z-index: 50;
+            background: rgba(0, 0, 0, 0.7); /* Darker focus */
+            backdrop-filter: blur(10px);
+            z-index: 100;
             justify-content: center;
             align-items: center;
             animation: fadeIn 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
         .settings-content {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 25px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
             padding: 3rem;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            color: #333;
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.8);
+            color: #fff;
             width: 90%;
-            max-width: 400px;
-            transform: scale(0.95);
-            animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        @keyframes scaleUp {
-            to { transform: scale(1); }
+            max-width: 450px;
         }
 
         input[type="datetime-local"] {
-            background: #f8f9fa;
-            color: #2d3748;
-            border: 2px solid #e2e8f0;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
             padding: 15px;
             border-radius: 12px;
             font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            margin: 15px 0;
-            outline: none;
             width: 100%;
-            transition: border-color 0.3s;
+            margin: 20px 0;
+            outline: none;
+        }
+        
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 0.5;
+            cursor: pointer;
         }
 
-        input[type="datetime-local"]:focus {
-            border-color: #fda085;
-        }
-
-        /* Checkbox Style */
+        /* Checkbox Custom */
         .checkbox-wrapper {
             display: flex;
             align-items: center;
-            justify-content: flex-start; /* Hizalamayı düzelttim */
-            gap: 10px;
-            margin-bottom: 10px; /* Aralığı azalttım */
-            padding: 10px;
-            background: rgba(0,0,0,0.03);
-            border-radius: 10px;
-            width: 100%; /* Tam genişlik */
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.1);
         }
 
         input[type="checkbox"] {
-            accent-color: #11998e;
+            appearance: none;
             width: 20px;
             height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            position: relative;
             cursor: pointer;
-            flex-shrink: 0; /* Küçülmesini engelle */
+            transition: all 0.2s;
         }
-        
-        .checkbox-label {
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.95rem;
-            color: #555;
-            cursor: pointer;
-            user-select: none;
-            text-align: left;
+
+        input[type="checkbox"]:checked {
+            background-color: #11998e;
+            border-color: #11998e;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         button.save-btn {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
+            background: #fff;
+            color: #000;
             border: none;
-            padding: 12px 35px;
+            padding: 14px 40px;
             border-radius: 50px;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
-            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+            margin-top: 10px;
         }
 
         button.save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(56, 239, 125, 0.6);
-        }
-
-        .settings-trigger {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            color: white;
-            cursor: pointer;
-            z-index: 20;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(4px);
-            padding: 12px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.3s;
-        }
-        .settings-trigger:hover {
-            background: rgba(255,255,255,0.3);
-            transform: rotate(90deg) scale(1.1);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
         }
 
         /* Mobile Adjustments */
         @media (max-width: 768px) {
-            .countdown-container { padding: 2rem 1.5rem; width: 95%; }
-            .title { font-size: 1.8rem; margin-bottom: 2rem; }
-            .timer-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-            .number { font-size: 2.5rem; }
-            .time-card { padding: 1rem 0.5rem; }
+            .title { font-size: 1.5rem; margin-bottom: 2rem; }
+            .timer-container { gap: 10px; }
+            .time-card { width: 45%; height: 160px; }
+            .number { font-size: 3.5rem; }
+            .bottom-dock { width: 90%; justify-content: space-around; }
         }
     </style>
 </head>
@@ -303,10 +363,11 @@
     <!-- Particle Overlay -->
     <div class="particles" id="particles"></div>
 
-    <div class="countdown-container">
+    <!-- Main Visual Wrapper -->
+    <div class="content-wrapper">
         <h1 class="title">YENİ BİR ŞAFAK</h1>
         
-        <div class="timer-grid" id="timer">
+        <div class="timer-container" id="timer">
             <div class="time-card">
                 <span class="number" id="days">00</span>
                 <span class="label">Gün</span>
@@ -325,43 +386,49 @@
             </div>
         </div>
 
-        <div class="message" id="status-message">
-            UMUT YÜKSELİYOR
+        <div class="message-container">
+            <div class="message" id="status-message">
+                UMUT YÜKSELİYOR
+            </div>
         </div>
     </div>
 
-    <!-- Hidden Settings Trigger -->
-    <div class="settings-trigger" onclick="openSettings()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+    <!-- Modern Bottom Dock Controls -->
+    <div class="bottom-dock">
+        <button class="dock-btn" onclick="cycleBackground()" title="Manzarayı Değiştir">
+            <!-- Refresh Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 5.5A10 10 0 1 1 11.26 2.8"/></svg>
+        </button>
+        
+        <div class="dock-separator"></div>
+        
+        <button class="dock-btn" onclick="openSettings()" title="Ayarlar">
+            <!-- Settings Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
     </div>
 
     <!-- Settings Modal -->
     <div id="settings-modal">
         <div class="settings-content">
-            <h2 style="font-family: 'Cinzel', serif; font-size: 1.8rem; margin-bottom: 0.5rem; color: #11998e;">ZAMANI BELİRLE</h2>
-            <p style="font-family: 'Poppins', sans-serif; font-size: 0.95rem; color: #718096; margin-bottom: 1rem;">Kutlama ne zaman başlıyor?</p>
+            <h2 style="font-family: 'Cinzel', serif; font-size: 1.5rem; margin-bottom: 0.5rem; letter-spacing: 2px;">ZAMANI BELİRLE</h2>
+            <p style="font-family: 'Poppins', sans-serif; font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 1.5rem;">Kader anı ne zaman?</p>
             
             <input type="datetime-local" id="target-date-input">
 
-            <div class="checkbox-wrapper">
-                <input type="checkbox" id="edip-check" onchange="toggleMode('edip')">
-                <label for="edip-check" class="checkbox-label">Edip Ceylan mısın?</label>
+            <div class="checkbox-wrapper" onclick="document.getElementById('edip-check').click()">
+                <input type="checkbox" id="edip-check" onchange="toggleMode('edip'); event.stopPropagation();">
+                <label for="edip-check" class="checkbox-label" style="font-family: 'Poppins', sans-serif; font-size: 0.9rem;">Edip Ceylan Modu</label>
             </div>
 
-            <div class="checkbox-wrapper">
-                <input type="checkbox" id="accounting-check" onchange="toggleMode('accounting')">
-                <label for="accounting-check" class="checkbox-label">Muhasebe Zamanı mı?</label>
+            <div class="checkbox-wrapper" onclick="document.getElementById('accounting-check').click()">
+                <input type="checkbox" id="accounting-check" onchange="toggleMode('accounting'); event.stopPropagation();">
+                <label for="accounting-check" class="checkbox-label" style="font-family: 'Poppins', sans-serif; font-size: 0.9rem;">Muhasebe Zamanı</label>
             </div>
 
-            <!-- Manzara Değiştirme Butonu -->
-            <button class="save-btn" onclick="cycleBackground()" style="background: transparent; border: 1px solid #11998e; color: #11998e; box-shadow: none; margin-bottom: 20px; width: 100%; font-size: 0.9rem;">
-                Manzarayı Değiştir ↻
-            </button>
-
-            <br>
-            <div style="display: flex; gap: 10px; justify-content: center;">
-                <button class="save-btn" onclick="saveDate()">Tarihi Onayla</button>
-                <button class="save-btn" onclick="closeSettings()" style="background: transparent; color: #718096; box-shadow: none;">İptal</button>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                <button class="save-btn" onclick="saveDate()">Uygula</button>
+                <button class="save-btn" onclick="closeSettings()" style="background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff;">İptal</button>
             </div>
         </div>
     </div>
@@ -369,26 +436,25 @@
     <script>
         // --- 10 Günlük Arka Plan Listesi ---
         const backgroundImages = [
-            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=2074&auto=format&fit=crop', // Sisli Dağlar (Default)
-            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071&auto=format&fit=crop', // Güneşli Orman
-            'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=2070&auto=format&fit=crop', // Yeşil Tepeler
-            'https://images.unsplash.com/photo-1501854140884-074bf6b243e7?q=80&w=2069&auto=format&fit=crop', // Göl ve Dağ
-            'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop', // Sakin Plaj
-            'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop', // Karlı Orman
-            'https://images.unsplash.com/photo-1426604966848-d7adac402bff?q=80&w=2070&auto=format&fit=crop', // Kanyon
-            'https://images.unsplash.com/photo-1497436072909-60f360e1d4b0?q=80&w=2560&auto=format&fit=crop', // Gün Doğumu
-            'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074&auto=format&fit=crop', // Yalnız Ağaç
-            'https://images.unsplash.com/photo-1500964757637-c85e8a162699?q=80&w=2078&auto=format&fit=crop'  // Şelale
+            'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=2074&auto=format&fit=crop', 
+            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071&auto=format&fit=crop', 
+            'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=2070&auto=format&fit=crop', 
+            'https://images.unsplash.com/photo-1501854140884-074bf6b243e7?q=80&w=2069&auto=format&fit=crop', 
+            'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop', 
+            'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop', 
+            'https://images.unsplash.com/photo-1426604966848-d7adac402bff?q=80&w=2070&auto=format&fit=crop', 
+            'https://images.unsplash.com/photo-1497436072909-60f360e1d4b0?q=80&w=2560&auto=format&fit=crop', 
+            'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074&auto=format&fit=crop', 
+            'https://images.unsplash.com/photo-1500964757637-c85e8a162699?q=80&w=2078&auto=format&fit=crop', 
+            'https://pbs.twimg.com/media/G-p1kmLbMAADuYm?format=jpg&name=large'
         ];
 
         let currentImageIndex = 0;
 
         function setDailyBackground() {
             const today = new Date();
-            // 24 saatte bir değişmesi için gün sayısını kullanıyoruz
             const dayIndex = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
             currentImageIndex = dayIndex % backgroundImages.length;
-            
             document.body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
         }
 
@@ -405,19 +471,14 @@
             for(let i=0; i<particleCount; i++) {
                 const p = document.createElement('div');
                 p.classList.add('particle');
-                
-                // Randomize positions and properties
-                const size = Math.random() * 8 + 4;
+                const size = Math.random() * 6 + 2; // Smaller, more elegant particles
                 p.style.left = Math.random() * 100 + '%';
                 p.style.width = size + 'px';
                 p.style.height = size + 'px';
-                
-                // Stagger animations
-                const duration = Math.random() * 15 + 10;
+                const duration = Math.random() * 20 + 15; // Slower movement
                 const delay = Math.random() * -20;
                 p.style.animationDuration = duration + 's';
                 p.style.animationDelay = delay + 's';
-                
                 container.appendChild(p);
             }
         }
@@ -426,17 +487,16 @@
         // --- Logic ---
         const DEFAULT_DATE = "2026-01-23T16:45:00"; 
         const EDIP_DATE = "2026-01-17T16:45:00";
-        const ACCOUNTING_DATE = "2026-01-26T16:45:00"; // Muhasebe tarihi
+        const ACCOUNTING_DATE = "2026-01-26T16:45:00";
 
         const STORAGE_KEY_DATE = 'salvation_deadline';
-        const STORAGE_KEY_MODE = 'salvation_mode'; // 'edip', 'accounting', or null
+        const STORAGE_KEY_MODE = 'salvation_mode';
         const STORAGE_KEY_BACKUP = 'salvation_backup_date';
 
         let targetDate;
-        let currentMode = null; // 'edip', 'accounting', null
+        let currentMode = null; 
         let tempDateBackup = ""; 
 
-        // Default Messages
         const defaultMessages = [
             "UMUT YÜKSELİYOR", "DAHA PARLAK BİR GELECEK", "O AN ÇOK YAKIN",
             "IŞIK KAZANACAK", "NEŞE BİZİ BEKLİYOR", "HAYALLER GERÇEK OLUYOR",
@@ -444,21 +504,16 @@
             "MUTLULUK KAPIDA", "YENİ BİR BAŞLANGIÇ", "BİRLİKTE DAHA GÜÇLÜYÜZ"
         ];
 
-        // Accounting Messages
         const accountingMessages = [
             "FİŞLERİ HAZIRLA", "BEYANNAME ZAMANI", "VERGİLER YAKLAŞIYOR",
             "HESAP VAKTİ", "KDV ÖDENDİ Mİ?", "BİLANÇO DENGELENİYOR",
-            "MATRAH ARTIRIMI", "STOPAJ KAPIDA", "SON GÜN YAKLAŞIYOR",
-            "DEFTERLER HAZIR MI?"
+            "MATRAH ARTIRIMI", "STOPAJ KAPIDA", "SON GÜN YAKLAŞIYOR"
         ];
 
         let messages = defaultMessages;
 
-        // Load data logic
         function loadDate() {
-            // Set Background First
             setDailyBackground();
-
             const storedMode = localStorage.getItem(STORAGE_KEY_MODE);
             currentMode = storedMode;
 
@@ -479,36 +534,32 @@
             }
         }
 
-        // Theme Updater
         function updateTheme(mode) {
             const titleEl = document.querySelector('.title');
             
             if (mode === 'accounting') {
                 titleEl.innerText = "MUHASEBE ZAMANI";
-                titleEl.style.color = "#FFD700"; // Altın sarısı
+                titleEl.style.color = "#FFD700";
                 messages = accountingMessages;
             } else {
                 titleEl.innerText = "YENİ BİR ŞAFAK";
-                titleEl.style.color = "var(--soft-white)";
+                titleEl.style.color = "rgba(255,255,255,0.9)";
                 messages = defaultMessages;
             }
-            
-            // Mesajı hemen güncelle
             document.getElementById('status-message').innerText = messages[0];
         }
 
         let msgIndex = 0;
         setInterval(() => {
             const msgEl = document.getElementById('status-message');
-            msgEl.style.transition = "opacity 0.8s ease";
+            msgEl.style.transition = "opacity 1s ease";
             msgEl.style.opacity = 0; 
             setTimeout(() => {
                 msgIndex = (msgIndex + 1) % messages.length;
                 msgEl.innerText = messages[msgIndex];
-                msgEl.style.opacity = 0.9; 
-            }, 800);
+                msgEl.style.opacity = 1; 
+            }, 1000);
         }, 5000);
-
 
         function updateCountdown() {
             const now = new Date().getTime();
@@ -517,34 +568,28 @@
             if (distance < 0) {
                 let endTitle = "BAŞLADI";
                 let endSub = "Yeni çağa hoş geldiniz";
-                
                 if (currentMode === 'accounting') {
                     endTitle = "SÜRE BİTTİ";
                     endSub = "Ceza yemeden gönder!";
                 }
 
                 document.getElementById("timer").innerHTML = `
-                    <div style="grid-column: span 4; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                        <div style="font-family: 'Cinzel', serif; font-size: 3rem; color: #fff; text-shadow: 0 0 25px rgba(255,255,255,0.8); margin-bottom: 1rem;">${endTitle}</div>
-                        <div style="font-family: 'Poppins', sans-serif; font-size: 1.2rem; opacity: 0.8;">${endSub}</div>
+                    <div style="width: 100%; text-align: center;">
+                        <div style="font-family: 'Cinzel', serif; font-size: 5rem; color: #fff; text-shadow: 0 0 40px rgba(255,255,255,0.6); margin-bottom: 1rem;">${endTitle}</div>
+                        <div style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; opacity: 0.8; letter-spacing: 5px;">${endSub}</div>
                     </div>`;
                 document.getElementById("status-message").style.display = "none";
                 return;
             }
             
-            // Eğer timer grid bozulmuşsa (bitiş mesajından sonra) tekrar oluştur
             const timerEl = document.getElementById("timer");
-            if (!timerEl.classList.contains('timer-grid')) {
-                 // Sayfayı yenilemek en temizi ama burada basitçe yeniden load edebiliriz.
-                 // Basitlik için return diyoruz, kullanıcı sayfayı yenilerse düzelir.
-            }
+            if (!timerEl.classList.contains('timer-container')) return;
 
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // Elementlerin varlığını kontrol et (Bitiş ekranı sonrası hata vermemesi için)
             if(document.getElementById("days")) {
                 document.getElementById("days").innerText = days < 10 ? "0" + days : days;
                 document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
@@ -563,30 +608,25 @@
             
             const storedMode = localStorage.getItem(STORAGE_KEY_MODE);
 
-            // Checkboxları ayarla
             edipCheck.checked = (storedMode === 'edip');
             accCheck.checked = (storedMode === 'accounting');
 
-            // Input değerini belirle
             let dateToSet;
             if (storedMode === 'edip') {
                 dateToSet = EDIP_DATE;
                 dateInput.disabled = true;
-                dateInput.style.opacity = "0.6";
+                dateInput.style.opacity = "0.5";
             } else if (storedMode === 'accounting') {
                 dateToSet = ACCOUNTING_DATE;
                 dateInput.disabled = true;
-                dateInput.style.opacity = "0.6";
+                dateInput.style.opacity = "0.5";
             } else {
-                // Mod yoksa mevcut hedefi kullan
                 const dateObj = new Date(targetDate);
-                // Timezone offset düzeltmesi
                 dateToSet = new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
                 dateInput.disabled = false;
                 dateInput.style.opacity = "1";
             }
 
-            // Inputa yaz (eğer iso string değilse çevir)
             if (!dateToSet.includes('T')) {
                  const d = new Date(dateToSet);
                  dateToSet = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
@@ -595,7 +635,6 @@
             }
             dateInput.value = dateToSet;
 
-            // Yedeği yükle
             tempDateBackup = localStorage.getItem(STORAGE_KEY_BACKUP);
             if (!tempDateBackup) {
                  const defDate = new Date(DEFAULT_DATE);
@@ -612,39 +651,21 @@
             const accCheck = document.getElementById('accounting-check');
             const dateInput = document.getElementById('target-date-input');
             
-            // Eğer Edip tıklandıysa ve işaretlendiyse -> Accounting'i kapat
-            if (modeName === 'edip' && edipCheck.checked) {
-                accCheck.checked = false;
-            }
-            // Eğer Accounting tıklandıysa ve işaretlendiyse -> Edip'i kapat
-            if (modeName === 'accounting' && accCheck.checked) {
-                edipCheck.checked = false;
-            }
+            if (modeName === 'edip' && edipCheck.checked) accCheck.checked = false;
+            if (modeName === 'accounting' && accCheck.checked) edipCheck.checked = false;
 
-            // Duruma göre inputu ayarla
             if (edipCheck.checked) {
-                // Backup al (eğer önceki mod 'none' idiyse, yani manuel girişten geldiyse)
-                if (!accCheck.checked && !dateInput.disabled) {
-                     tempDateBackup = dateInput.value;
-                }
-                
+                if (!accCheck.checked && !dateInput.disabled) tempDateBackup = dateInput.value;
                 dateInput.value = EDIP_DATE;
                 dateInput.disabled = true;
-                dateInput.style.opacity = "0.6";
+                dateInput.style.opacity = "0.5";
             } else if (accCheck.checked) {
-                // Backup al (eğer önceki mod 'none' idiyse)
-                if (!edipCheck.checked && !dateInput.disabled) {
-                     tempDateBackup = dateInput.value;
-                }
-
+                if (!edipCheck.checked && !dateInput.disabled) tempDateBackup = dateInput.value;
                 dateInput.value = ACCOUNTING_DATE;
                 dateInput.disabled = true;
-                dateInput.style.opacity = "0.6";
+                dateInput.style.opacity = "0.5";
             } else {
-                // Hiçbiri seçili değil -> Eskiye dön
-                if(tempDateBackup) {
-                    dateInput.value = tempDateBackup;
-                }
+                if(tempDateBackup) dateInput.value = tempDateBackup;
                 dateInput.disabled = false;
                 dateInput.style.opacity = "1";
             }
@@ -670,7 +691,6 @@
                     updateTheme(null);
                 }
                 
-                // Yedeği sakla
                 if (tempDateBackup) {
                     localStorage.setItem(STORAGE_KEY_BACKUP, tempDateBackup);
                 }
