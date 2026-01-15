@@ -223,12 +223,30 @@
         .checkbox-wrapper {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* Hizalamayı düzelttim */
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 10px; /* Aralığı azalttım */
             padding: 10px;
             background: rgba(0,0,0,0.03);
             border-radius: 10px;
+            width: 100%; /* Tam genişlik */
+        }
+
+        input[type="checkbox"] {
+            accent-color: #11998e;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            flex-shrink: 0; /* Küçülmesini engelle */
+        }
+        
+        .checkbox-label {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            color: #555;
+            cursor: pointer;
+            user-select: none;
+            text-align: left;
         }
 
         input[type="checkbox"] {
@@ -340,8 +358,13 @@
             <input type="datetime-local" id="target-date-input">
 
             <div class="checkbox-wrapper">
-                <input type="checkbox" id="edip-check" onchange="toggleEdipMode()">
+                <input type="checkbox" id="edip-check" onchange="toggleMode('edip')">
                 <label for="edip-check" class="checkbox-label">Edip Ceylan mısın?</label>
+            </div>
+
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="accounting-check" onchange="toggleMode('accounting')">
+                <label for="accounting-check" class="checkbox-label">Muhasebe Zamanı mı?</label>
             </div>
 
             <br>
@@ -382,54 +405,83 @@
         // --- Logic ---
         const DEFAULT_DATE = "2026-01-23T16:45:00"; 
         const EDIP_DATE = "2026-01-17T16:45:00";
+        const ACCOUNTING_DATE = "2026-01-26T16:45:00"; // Muhasebe tarihi
+
         const STORAGE_KEY_DATE = 'salvation_deadline';
-        const STORAGE_KEY_EDIP = 'salvation_is_edip';
+        const STORAGE_KEY_MODE = 'salvation_mode'; // 'edip', 'accounting', or null
         const STORAGE_KEY_BACKUP = 'salvation_backup_date';
 
         let targetDate;
-        let tempDateBackup = ""; // Ayarlar penceresi açıkken geçici hafıza
+        let currentMode = null; // 'edip', 'accounting', null
+        let tempDateBackup = ""; 
 
-        // Load date from local storage or use default
+        // Default Messages
+        const defaultMessages = [
+            "UMUT YÜKSELİYOR", "DAHA PARLAK BİR GELECEK", "O AN ÇOK YAKIN",
+            "IŞIK KAZANACAK", "NEŞE BİZİ BEKLİYOR", "HAYALLER GERÇEK OLUYOR",
+            "ZAFER BİZİM OLACAK", "BEKLEDİĞİMİZE DEĞECEK", "GÜNEŞ DOĞUYOR",
+            "MUTLULUK KAPIDA", "YENİ BİR BAŞLANGIÇ", "BİRLİKTE DAHA GÜÇLÜYÜZ"
+        ];
+
+        // Accounting Messages
+        const accountingMessages = [
+            "FİŞLERİ HAZIRLA", "BEYANNAME ZAMANI", "VERGİLER YAKLAŞIYOR",
+            "HESAP VAKTİ", "KDV ÖDENDİ Mİ?", "BİLANÇO DENGELENİYOR",
+            "MATRAH ARTIRIMI", "STOPAJ KAPIDA", "SON GÜN YAKLAŞIYOR",
+            "DEFTERLER HAZIR MI?"
+        ];
+
+        let messages = defaultMessages;
+
+        // Load data logic
         function loadDate() {
-            const isEdip = localStorage.getItem(STORAGE_KEY_EDIP) === 'true';
-            
-            if (isEdip) {
+            const storedMode = localStorage.getItem(STORAGE_KEY_MODE);
+            currentMode = storedMode;
+
+            if (storedMode === 'edip') {
                 targetDate = new Date(EDIP_DATE).getTime();
+                updateTheme('edip');
+            } else if (storedMode === 'accounting') {
+                targetDate = new Date(ACCOUNTING_DATE).getTime();
+                updateTheme('accounting');
             } else {
-                const stored = localStorage.getItem(STORAGE_KEY_DATE);
-                if (stored) {
-                    targetDate = new Date(stored).getTime();
+                const storedDate = localStorage.getItem(STORAGE_KEY_DATE);
+                if (storedDate) {
+                    targetDate = new Date(storedDate).getTime();
                 } else {
                     targetDate = new Date(DEFAULT_DATE).getTime();
                 }
+                updateTheme(null);
             }
         }
 
-        // Messages to cycle through
-        const messages = [
-            "UMUT YÜKSELİYOR",
-            "DAHA PARLAK BİR GELECEK",
-            "O AN ÇOK YAKIN",
-            "IŞIK KAZANACAK",
-            "NEŞE BİZİ BEKLİYOR",
-            "HAYALLER GERÇEK OLUYOR",
-            "ZAFER BİZİM OLACAK",
-            "BEKLEDİĞİMİZE DEĞECEK",
-            "GÜNEŞ DOĞUYOR",
-            "MUTLULUK KAPIDA",
-            "YENİ BİR BAŞLANGIÇ",
-            "BİRLİKTE DAHA GÜÇLÜYÜZ"
-        ];
-        
+        // Theme Updater
+        function updateTheme(mode) {
+            const titleEl = document.querySelector('.title');
+            
+            if (mode === 'accounting') {
+                titleEl.innerText = "MUHASEBE ZAMANI";
+                titleEl.style.color = "#FFD700"; // Altın sarısı
+                messages = accountingMessages;
+            } else {
+                titleEl.innerText = "YENİ BİR ŞAFAK";
+                titleEl.style.color = "var(--soft-white)";
+                messages = defaultMessages;
+            }
+            
+            // Mesajı hemen güncelle
+            document.getElementById('status-message').innerText = messages[0];
+        }
+
         let msgIndex = 0;
         setInterval(() => {
             const msgEl = document.getElementById('status-message');
             msgEl.style.transition = "opacity 0.8s ease";
-            msgEl.style.opacity = 0; // Fade out
+            msgEl.style.opacity = 0; 
             setTimeout(() => {
                 msgIndex = (msgIndex + 1) % messages.length;
                 msgEl.innerText = messages[msgIndex];
-                msgEl.style.opacity = 0.9; // Fade in
+                msgEl.style.opacity = 0.9; 
             }, 800);
         }, 5000);
 
@@ -439,13 +491,28 @@
             const distance = targetDate - now;
 
             if (distance < 0) {
+                let endTitle = "BAŞLADI";
+                let endSub = "Yeni çağa hoş geldiniz";
+                
+                if (currentMode === 'accounting') {
+                    endTitle = "SÜRE BİTTİ";
+                    endSub = "Ceza yemeden gönder!";
+                }
+
                 document.getElementById("timer").innerHTML = `
                     <div style="grid-column: span 4; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                        <div style="font-family: 'Cinzel', serif; font-size: 3rem; color: #fff; text-shadow: 0 0 25px rgba(255,255,255,0.8); margin-bottom: 1rem;">BAŞLADI</div>
-                        <div style="font-family: 'Poppins', sans-serif; font-size: 1.2rem; opacity: 0.8;">Yeni çağa hoş geldiniz</div>
+                        <div style="font-family: 'Cinzel', serif; font-size: 3rem; color: #fff; text-shadow: 0 0 25px rgba(255,255,255,0.8); margin-bottom: 1rem;">${endTitle}</div>
+                        <div style="font-family: 'Poppins', sans-serif; font-size: 1.2rem; opacity: 0.8;">${endSub}</div>
                     </div>`;
                 document.getElementById("status-message").style.display = "none";
                 return;
+            }
+            
+            // Eğer timer grid bozulmuşsa (bitiş mesajından sonra) tekrar oluştur
+            const timerEl = document.getElementById("timer");
+            if (!timerEl.classList.contains('timer-grid')) {
+                 // Sayfayı yenilemek en temizi ama burada basitçe yeniden load edebiliriz.
+                 // Basitlik için return diyoruz, kullanıcı sayfayı yenilerse düzelir.
             }
 
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -453,48 +520,62 @@
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            document.getElementById("days").innerText = days < 10 ? "0" + days : days;
-            document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
-            document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
-            document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+            // Elementlerin varlığını kontrol et (Bitiş ekranı sonrası hata vermemesi için)
+            if(document.getElementById("days")) {
+                document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+                document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+                document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+                document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+            }
         }
 
         // --- Settings Modal Logic ---
         function openSettings() {
             document.getElementById('settings-modal').style.display = 'flex';
             
-            const checkbox = document.getElementById('edip-check');
+            const edipCheck = document.getElementById('edip-check');
+            const accCheck = document.getElementById('accounting-check');
             const dateInput = document.getElementById('target-date-input');
-            const isEdipStored = localStorage.getItem(STORAGE_KEY_EDIP) === 'true';
             
-            // Checkbox durumunu yükle
-            checkbox.checked = isEdipStored;
+            const storedMode = localStorage.getItem(STORAGE_KEY_MODE);
 
-            if (isEdipStored) {
-                // Eğer Edip modu açıksa inputa Edip tarihini koy ve kilitle
-                const edipDate = new Date(EDIP_DATE);
-                const isoString = new Date(edipDate.getTime() - (edipDate.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-                dateInput.value = isoString;
+            // Checkboxları ayarla
+            edipCheck.checked = (storedMode === 'edip');
+            accCheck.checked = (storedMode === 'accounting');
+
+            // Input değerini belirle
+            let dateToSet;
+            if (storedMode === 'edip') {
+                dateToSet = EDIP_DATE;
                 dateInput.disabled = true;
                 dateInput.style.opacity = "0.6";
-
-                // Yedeği storage'dan yükle (kullanıcının eski tarihi)
-                tempDateBackup = localStorage.getItem(STORAGE_KEY_BACKUP);
-                if (!tempDateBackup) {
-                    // Eğer yedek yoksa default tarihi yedek yap
-                    const defDate = new Date(DEFAULT_DATE);
-                    tempDateBackup = new Date(defDate.getTime() - (defDate.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-                }
+            } else if (storedMode === 'accounting') {
+                dateToSet = ACCOUNTING_DATE;
+                dateInput.disabled = true;
+                dateInput.style.opacity = "0.6";
             } else {
-                // Eğer Edip modu kapalıysa mevcut hedef tarihi inputa koy
+                // Mod yoksa mevcut hedefi kullan
                 const dateObj = new Date(targetDate);
-                const isoString = new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-                dateInput.value = isoString;
+                // Timezone offset düzeltmesi
+                dateToSet = new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
                 dateInput.disabled = false;
                 dateInput.style.opacity = "1";
-                
-                // Şu anki değeri yedek olarak al (eğer şimdi kutucuğu işaretlerse buna dönecek)
-                tempDateBackup = isoString;
+            }
+
+            // Inputa yaz (eğer iso string değilse çevir)
+            if (!dateToSet.includes('T')) {
+                 const d = new Date(dateToSet);
+                 dateToSet = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+            } else if (dateToSet.length > 16) {
+                 dateToSet = dateToSet.slice(0, 16);
+            }
+            dateInput.value = dateToSet;
+
+            // Yedeği yükle
+            tempDateBackup = localStorage.getItem(STORAGE_KEY_BACKUP);
+            if (!tempDateBackup) {
+                 const defDate = new Date(DEFAULT_DATE);
+                 tempDateBackup = new Date(defDate.getTime() - (defDate.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
             }
         }
 
@@ -502,31 +583,44 @@
             document.getElementById('settings-modal').style.display = 'none';
         }
 
-        function toggleEdipMode() {
-            const checkbox = document.getElementById('edip-check');
+        function toggleMode(modeName) {
+            const edipCheck = document.getElementById('edip-check');
+            const accCheck = document.getElementById('accounting-check');
             const dateInput = document.getElementById('target-date-input');
             
-            if (checkbox.checked) {
-                // Kutucuk işaretlendi:
-                // 1. Mevcut input değerini yedekle (kullanıcı manuel değiştirdiyse onu kaybetmeyelim)
-                tempDateBackup = dateInput.value;
+            // Eğer Edip tıklandıysa ve işaretlendiyse -> Accounting'i kapat
+            if (modeName === 'edip' && edipCheck.checked) {
+                accCheck.checked = false;
+            }
+            // Eğer Accounting tıklandıysa ve işaretlendiyse -> Edip'i kapat
+            if (modeName === 'accounting' && accCheck.checked) {
+                edipCheck.checked = false;
+            }
 
-                // 2. Tarihi Edip tarihine ayarla
-                const edipDate = new Date(EDIP_DATE);
-                const isoString = new Date(edipDate.getTime() - (edipDate.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-                dateInput.value = isoString;
+            // Duruma göre inputu ayarla
+            if (edipCheck.checked) {
+                // Backup al (eğer önceki mod 'none' idiyse, yani manuel girişten geldiyse)
+                if (!accCheck.checked && !dateInput.disabled) {
+                     tempDateBackup = dateInput.value;
+                }
+                
+                dateInput.value = EDIP_DATE;
+                dateInput.disabled = true;
+                dateInput.style.opacity = "0.6";
+            } else if (accCheck.checked) {
+                // Backup al (eğer önceki mod 'none' idiyse)
+                if (!edipCheck.checked && !dateInput.disabled) {
+                     tempDateBackup = dateInput.value;
+                }
 
-                // 3. Inputu kilitle
+                dateInput.value = ACCOUNTING_DATE;
                 dateInput.disabled = true;
                 dateInput.style.opacity = "0.6";
             } else {
-                // Kutucuk kaldırıldı:
-                // 1. Yedekten geri yükle
+                // Hiçbiri seçili değil -> Eskiye dön
                 if(tempDateBackup) {
                     dateInput.value = tempDateBackup;
                 }
-                
-                // 2. Input kilidini aç
                 dateInput.disabled = false;
                 dateInput.style.opacity = "1";
             }
@@ -534,25 +628,27 @@
 
         function saveDate() {
             const inputVal = document.getElementById('target-date-input').value;
-            const checkbox = document.getElementById('edip-check');
+            const edipCheck = document.getElementById('edip-check');
+            const accCheck = document.getElementById('accounting-check');
 
             if (inputVal) {
-                // Tarihi kaydet (Edip modundaysak zaten Edip tarihi inputta yazar)
                 targetDate = new Date(inputVal).getTime();
                 
-                if (checkbox.checked) {
-                    // Edip modu aktifse
-                    localStorage.setItem(STORAGE_KEY_EDIP, 'true');
-                    // Kullanıcının asıl tarihini (yedeği) sakla ki sonra dönebilsin
-                    if (tempDateBackup) {
-                        localStorage.setItem(STORAGE_KEY_BACKUP, tempDateBackup);
-                    }
-                    // Ana tarih key'ini güncellemeye gerek yok veya Edip tarihi olarak güncelleyebiliriz,
-                    // ama loadDate'de öncelik EDIP flag'inde olduğu için sorun olmaz.
+                if (edipCheck.checked) {
+                    localStorage.setItem(STORAGE_KEY_MODE, 'edip');
+                    updateTheme('edip');
+                } else if (accCheck.checked) {
+                    localStorage.setItem(STORAGE_KEY_MODE, 'accounting');
+                    updateTheme('accounting');
                 } else {
-                    // Edip modu kapalıysa
-                    localStorage.setItem(STORAGE_KEY_EDIP, 'false');
+                    localStorage.setItem(STORAGE_KEY_MODE, 'none');
                     localStorage.setItem(STORAGE_KEY_DATE, inputVal);
+                    updateTheme(null);
+                }
+                
+                // Yedeği sakla
+                if (tempDateBackup) {
+                    localStorage.setItem(STORAGE_KEY_BACKUP, tempDateBackup);
                 }
 
                 updateCountdown();
