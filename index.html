@@ -399,6 +399,13 @@
             <!-- Refresh Icon -->
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 5.5A10 10 0 1 1 11.26 2.8"/></svg>
         </button>
+
+        <div class="dock-separator"></div>
+
+        <button class="dock-btn" id="ff-btn" onclick="toggleFastForward()" title="Zamanı Hızlandır">
+            <!-- Fast Forward Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 19 22 12 13 5 13 19"></polygon><polygon points="2 19 11 12 2 5 2 19"></polygon></svg>
+        </button>
         
         <div class="dock-separator"></div>
         
@@ -495,7 +502,9 @@
 
         let targetDate;
         let currentMode = null; 
-        let tempDateBackup = ""; 
+        let tempDateBackup = "";
+        let timeOffset = 0;
+        let ffInterval = null;
 
         const defaultMessages = [
             "UMUT YÜKSELİYOR", "DAHA PARLAK BİR GELECEK", "O AN ÇOK YAKIN",
@@ -561,8 +570,29 @@
             }, 1000);
         }, 5000);
 
+        function toggleFastForward() {
+            const btn = document.getElementById('ff-btn');
+            if (ffInterval) {
+                // Stop
+                clearInterval(ffInterval);
+                ffInterval = null;
+                btn.style.color = "rgba(255,255,255,0.7)";
+                btn.style.background = "transparent";
+            } else {
+                // Start
+                btn.style.color = "#fff";
+                btn.style.background = "rgba(255,255,255,0.2)";
+                
+                // Speed: Add 1 hour every 20ms
+                ffInterval = setInterval(() => {
+                    timeOffset += 1000 * 60 * 60; 
+                    updateCountdown();
+                }, 20);
+            }
+        }
+
         function updateCountdown() {
-            const now = new Date().getTime();
+            const now = new Date().getTime() + timeOffset;
             const distance = targetDate - now;
 
             if (distance < 0) {
