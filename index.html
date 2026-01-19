@@ -225,13 +225,98 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            width: 40px; /* Fixed width for better centering */
+            height: 40px;
         }
 
-        .dock-btn:hover {
+        .dock-btn:hover, .dock-btn.active {
             color: #fff;
             background: rgba(255,255,255,0.1);
             transform: scale(1.1);
         }
+        
+        /* --- Advanced Music Visualizer --- */
+        .icon-static {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .dock-btn.playing .icon-static {
+            opacity: 0;
+            transform: scale(0.5);
+            position: absolute; /* Remove from flow */
+        }
+        
+        .playing-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center; /* Center vertically */
+            justify-content: center;
+            gap: 3px;
+            height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease 0.1s; /* Slight delay for smoother swap */
+            pointer-events: none;
+        }
+        
+        .dock-btn.playing .playing-indicator {
+            opacity: 1;
+        }
+        
+        .bar {
+            width: 3px;
+            background: #fff;
+            border-radius: 2px;
+            animation: sound 0ms -800ms linear infinite alternate;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+            height: 4px; /* Start small */
+        }
+
+        @keyframes sound {
+            0% { height: 4px; opacity: 0.6; }
+            100% { height: 18px; opacity: 1; }
+        }
+        
+        /* Randomized animations for organic feel */
+        .bar:nth-child(1)  { animation-duration: 474ms; }
+        .bar:nth-child(2)  { animation-duration: 433ms; }
+        .bar:nth-child(3)  { animation-duration: 407ms; }
+        .bar:nth-child(4)  { animation-duration: 458ms; }
+        .bar:nth-child(5)  { animation-duration: 400ms; }
+
+        /* Popup Visualizer (Mini) */
+        .popup-visualizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 2px;
+            height: 15px;
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        #music-player.playing .popup-visualizer {
+            opacity: 1;
+        }
+
+        .p-bar {
+            width: 2px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 1px;
+            animation: sound 0ms -800ms linear infinite alternate;
+        }
+        
+        .p-bar:nth-child(1) { animation-duration: 300ms; }
+        .p-bar:nth-child(2) { animation-duration: 500ms; }
+        .p-bar:nth-child(3) { animation-duration: 400ms; }
+        .p-bar:nth-child(4) { animation-duration: 600ms; }
+        .p-bar:nth-child(5) { animation-duration: 350ms; }
+
+        /* --- End Visualizer --- */
 
         .dock-separator {
             width: 1px;
@@ -348,6 +433,149 @@
             box-shadow: 0 0 20px rgba(255,255,255,0.3);
         }
 
+        /* Music Player Popup */
+        #music-player {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            width: 320px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 45;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #music-player.show {
+            display: flex;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .genre-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.05);
+            padding: 4px;
+            border-radius: 20px;
+        }
+
+        .genre-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.6);
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .genre-btn.active {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+
+        .genre-btn:hover:not(.active) {
+            color: #fff;
+        }
+
+        .music-info {
+            text-align: center;
+            margin-bottom: 15px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .music-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .music-status {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 2px;
+        }
+
+        .music-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .music-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .music-btn:hover {
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        /* Volume Control Styles */
+        .volume-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .volume-slider:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.3);
+        }
+
         /* Mobile Adjustments */
         @media (max-width: 768px) {
             .title { font-size: 1.5rem; margin-bottom: 2rem; }
@@ -393,24 +621,80 @@
         </div>
     </div>
 
+    <!-- Music Player Popup -->
+    <div id="music-player">
+        <!-- Genre Selection -->
+        <div class="genre-selector">
+            <button class="genre-btn active" id="btn-lofi" onclick="setGenre('lofi')">Lo-Fi</button>
+            <button class="genre-btn" id="btn-war" onclick="setGenre('war')">Savaş</button>
+        </div>
+
+        <div class="music-info">
+            <div class="music-title" id="track-name">Lo-Fi Radio</div>
+            <div class="music-status" id="track-status">Hazır</div>
+            
+            <!-- Popup Mini Visualizer -->
+            <div class="popup-visualizer">
+                <div class="p-bar"></div>
+                <div class="p-bar"></div>
+                <div class="p-bar"></div>
+                <div class="p-bar"></div>
+                <div class="p-bar"></div>
+            </div>
+        </div>
+
+        <div class="music-controls">
+            <button class="music-btn" onclick="prevTrack()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+            </button>
+            <button class="music-btn" onclick="togglePlay()" id="play-pause-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </button>
+            <button class="music-btn" onclick="nextTrack()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+            </button>
+        </div>
+
+        <!-- Volume Control -->
+        <div class="volume-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: rgba(255,255,255,0.7)"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="0.5" oninput="setVolume(this.value)">
+        </div>
+
+        <audio id="audio-element" onended="nextTrack()"></audio>
+    </div>
+
     <!-- Modern Bottom Dock Controls -->
     <div class="bottom-dock">
+        <button class="dock-btn" id="music-toggle-btn" onclick="toggleMusicPanel()" title="Müzik Çalar">
+            <!-- Static Icon -->
+            <svg class="icon-static" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            
+            <!-- Animated Waveform -->
+            <div class="playing-indicator">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </button>
+
+        <div class="dock-separator"></div>
+
         <button class="dock-btn" onclick="cycleBackground()" title="Manzarayı Değiştir">
-            <!-- Refresh Icon -->
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 5.5A10 10 0 1 1 11.26 2.8"/></svg>
         </button>
 
         <div class="dock-separator"></div>
 
         <button class="dock-btn" id="ff-btn" onclick="toggleFastForward()" title="Zamanı Hızlandır">
-            <!-- Fast Forward Icon -->
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 19 22 12 13 5 13 19"></polygon><polygon points="2 19 11 12 2 5 2 19"></polygon></svg>
         </button>
         
         <div class="dock-separator"></div>
         
         <button class="dock-btn" onclick="openSettings()" title="Ayarlar">
-            <!-- Settings Icon -->
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </button>
     </div>
@@ -422,11 +706,6 @@
             <p style="font-family: 'Poppins', sans-serif; font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 1.5rem;">Kader anı ne zaman?</p>
             
             <input type="datetime-local" id="target-date-input">
-
-            <div class="checkbox-wrapper" onclick="document.getElementById('edip-check').click()">
-                <input type="checkbox" id="edip-check" onchange="toggleMode('edip'); event.stopPropagation();">
-                <label for="edip-check" class="checkbox-label" style="font-family: 'Poppins', sans-serif; font-size: 0.9rem;">Edip Ceylan Modu</label>
-            </div>
 
             <div class="checkbox-wrapper" onclick="document.getElementById('accounting-check').click()">
                 <input type="checkbox" id="accounting-check" onchange="toggleMode('accounting'); event.stopPropagation();">
@@ -470,6 +749,109 @@
             document.body.style.backgroundImage = `url('${backgroundImages[currentImageIndex]}')`;
         }
 
+        // --- Music Player Logic ---
+        const playlists = {
+            lofi: [
+                { title: "Chill Vibes", src: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112762.mp3" },
+                { title: "Night Study", src: "https://cdn.pixabay.com/download/audio/2022/02/07/audio_472b535d49.mp3?filename=lofi-chill-medium-version-14077.mp3" },
+                { title: "Dreamy Beats", src: "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c8c8a73467.mp3?filename=lofi-beat-chill-11451.mp3" }
+            ],
+            war: [
+                { title: "Epic Cinematic", src: "https://cdn.pixabay.com/download/audio/2020/11/10/audio_54746618a8.mp3?filename=cinematic-epic-battle-music-11116.mp3" },
+                { title: "Battle March", src: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=epic-cinematic-trailer-11608.mp3" },
+                { title: "Hero's Journey", src: "https://cdn.pixabay.com/download/audio/2021/08/04/audio_34b225324d.mp3?filename=heroic-intro-21171.mp3" }
+            ]
+        };
+        
+        let currentGenre = 'lofi';
+        let currentPlaylist = playlists.lofi;
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        const audio = document.getElementById('audio-element');
+        const playerPopup = document.getElementById('music-player');
+        
+        // Init volume
+        audio.volume = 0.5;
+
+        function setGenre(genre) {
+            if (currentGenre === genre) return;
+            
+            // UI Update
+            document.getElementById(`btn-${currentGenre}`).classList.remove('active');
+            document.getElementById(`btn-${genre}`).classList.add('active');
+            
+            // Logic Update
+            currentGenre = genre;
+            currentPlaylist = playlists[genre];
+            currentTrackIndex = 0;
+            
+            // Load and Play
+            loadTrack(0);
+            if (isPlaying) {
+                audio.play();
+            }
+        }
+
+        function toggleMusicPanel() {
+            const panel = document.getElementById('music-player');
+            const btn = document.getElementById('music-toggle-btn');
+            
+            if (panel.style.display === 'flex') {
+                panel.classList.remove('show');
+                setTimeout(() => panel.style.display = 'none', 300);
+                btn.classList.remove('active');
+            } else {
+                panel.style.display = 'flex';
+                setTimeout(() => panel.classList.add('show'), 10);
+                btn.classList.add('active');
+            }
+        }
+
+        function loadTrack(index) {
+            audio.src = currentPlaylist[index].src;
+            document.getElementById('track-name').innerText = currentPlaylist[index].title;
+            document.getElementById('track-status').innerText = isPlaying ? "Çalıyor..." : "Duraklatıldı";
+        }
+
+        function setVolume(val) {
+            audio.volume = val;
+        }
+
+        function togglePlay() {
+            if (audio.src === "") loadTrack(currentTrackIndex);
+            
+            const btn = document.getElementById('music-toggle-btn');
+
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                document.getElementById('play-pause-btn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+                document.getElementById('track-status').innerText = "Duraklatıldı";
+                btn.classList.remove('playing');
+                playerPopup.classList.remove('playing');
+            } else {
+                audio.play();
+                isPlaying = true;
+                document.getElementById('play-pause-btn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+                document.getElementById('track-status').innerText = "Çalıyor...";
+                btn.classList.add('playing');
+                playerPopup.classList.add('playing');
+            }
+        }
+
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
+            loadTrack(currentTrackIndex);
+            if (isPlaying) audio.play();
+        }
+
+        function prevTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+            loadTrack(currentTrackIndex);
+            if (isPlaying) audio.play();
+        }
+
+
         // --- Particle Generation ---
         function createParticles() {
             const container = document.getElementById('particles');
@@ -478,11 +860,11 @@
             for(let i=0; i<particleCount; i++) {
                 const p = document.createElement('div');
                 p.classList.add('particle');
-                const size = Math.random() * 6 + 2; // Smaller, more elegant particles
+                const size = Math.random() * 6 + 2; 
                 p.style.left = Math.random() * 100 + '%';
                 p.style.width = size + 'px';
                 p.style.height = size + 'px';
-                const duration = Math.random() * 20 + 15; // Slower movement
+                const duration = Math.random() * 20 + 15; 
                 const delay = Math.random() * -20;
                 p.style.animationDuration = duration + 's';
                 p.style.animationDelay = delay + 's';
@@ -493,7 +875,6 @@
 
         // --- Logic ---
         const DEFAULT_DATE = "2026-01-23T16:45:00"; 
-        const EDIP_DATE = "2026-01-17T16:45:00";
         const ACCOUNTING_DATE = "2026-01-26T16:45:00";
 
         const STORAGE_KEY_DATE = 'salvation_deadline';
@@ -526,10 +907,7 @@
             const storedMode = localStorage.getItem(STORAGE_KEY_MODE);
             currentMode = storedMode;
 
-            if (storedMode === 'edip') {
-                targetDate = new Date(EDIP_DATE).getTime();
-                updateTheme('edip');
-            } else if (storedMode === 'accounting') {
+            if (storedMode === 'accounting') {
                 targetDate = new Date(ACCOUNTING_DATE).getTime();
                 updateTheme('accounting');
             } else {
@@ -632,21 +1010,15 @@
         function openSettings() {
             document.getElementById('settings-modal').style.display = 'flex';
             
-            const edipCheck = document.getElementById('edip-check');
             const accCheck = document.getElementById('accounting-check');
             const dateInput = document.getElementById('target-date-input');
             
             const storedMode = localStorage.getItem(STORAGE_KEY_MODE);
 
-            edipCheck.checked = (storedMode === 'edip');
             accCheck.checked = (storedMode === 'accounting');
 
             let dateToSet;
-            if (storedMode === 'edip') {
-                dateToSet = EDIP_DATE;
-                dateInput.disabled = true;
-                dateInput.style.opacity = "0.5";
-            } else if (storedMode === 'accounting') {
+            if (storedMode === 'accounting') {
                 dateToSet = ACCOUNTING_DATE;
                 dateInput.disabled = true;
                 dateInput.style.opacity = "0.5";
@@ -677,20 +1049,11 @@
         }
 
         function toggleMode(modeName) {
-            const edipCheck = document.getElementById('edip-check');
             const accCheck = document.getElementById('accounting-check');
             const dateInput = document.getElementById('target-date-input');
             
-            if (modeName === 'edip' && edipCheck.checked) accCheck.checked = false;
-            if (modeName === 'accounting' && accCheck.checked) edipCheck.checked = false;
-
-            if (edipCheck.checked) {
-                if (!accCheck.checked && !dateInput.disabled) tempDateBackup = dateInput.value;
-                dateInput.value = EDIP_DATE;
-                dateInput.disabled = true;
-                dateInput.style.opacity = "0.5";
-            } else if (accCheck.checked) {
-                if (!edipCheck.checked && !dateInput.disabled) tempDateBackup = dateInput.value;
+            if (accCheck.checked) {
+                if (!dateInput.disabled) tempDateBackup = dateInput.value;
                 dateInput.value = ACCOUNTING_DATE;
                 dateInput.disabled = true;
                 dateInput.style.opacity = "0.5";
@@ -703,16 +1066,12 @@
 
         function saveDate() {
             const inputVal = document.getElementById('target-date-input').value;
-            const edipCheck = document.getElementById('edip-check');
             const accCheck = document.getElementById('accounting-check');
 
             if (inputVal) {
                 targetDate = new Date(inputVal).getTime();
                 
-                if (edipCheck.checked) {
-                    localStorage.setItem(STORAGE_KEY_MODE, 'edip');
-                    updateTheme('edip');
-                } else if (accCheck.checked) {
+                if (accCheck.checked) {
                     localStorage.setItem(STORAGE_KEY_MODE, 'accounting');
                     updateTheme('accounting');
                 } else {
